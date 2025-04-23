@@ -8,12 +8,12 @@ An OS is the interface between the user and the architecture. User manages hardw
 ## 2.1.1 Modern OS Functionality
 
 - Process and Thread Management 進程與線程管理
-- Concurrency 並發
-	- Doing multiple things simultaneously. 同時做多件事情。
-- I/O Devices I/O設備管理
-- Memory Management 內存管理
-	- Coordinates allocation of memory. 定位內存分配
-	- Move data between disk and main memory. 在存儲和主存之間移動數據。
+- Concurrency (並發)
+	- Doing multiple things simultaneously (同時做多件事情)
+- I/O Devices (I/O設備管理)
+- Memory Management (內存管理)
+	- Coordinates allocation of memory (定位內存分配)
+	- Move data between disk and main memory (在存儲和主存之間移動數據)
 - Files 文件管理
 	- Coordinates how disk space is used for files. 規定磁盤空間如何為了存儲文件而分配
 
@@ -60,14 +60,13 @@ _start:
 
 ```
 
-## User Mode vs Kernel Mode 用戶態與內核態
+## 2.2.1 User Mode vs Kernel Mode 用戶態與內核態
 
 User/Kernel mode is designed to **protect** the system from aberrant users and processors from accessing restricted instructions that could only used by the OS.
 
 用戶態與內核態用於**保護**系統免受異常用戶的侵犯，並防止處理器訪問只能由操作係統使用的受限指令。
 
 A user (in most times are referred as an application) may not:
-
 - Address I/O directly. 
 - Use instructions that manipulate the state of memory.
 - **Set the mode bits that determine user/kernel mode. **
@@ -75,16 +74,18 @@ A user (in most times are referred as an application) may not:
 - Halt the machine.
 
 But in the kernel mode, the operating system can do all these things above.
-
 The hardware should at least support that:
-
 - A status bit in a protected processor register indicates the mode. 
 - Protected instructions can only be executed in kernel mode. 
 
-## System Call 系統調用
+**User Mode and Kernel Mode must rely on Hardware**
+Think about what a software solution could be like.
+- Check privilege whenever we execute a command?
+	- Performance overhead too much!
+
+## 2.2.2 System Call 系統調用
 
 System call is an API exposed by the kernel that executes privileged instructions.
-
 System Call，或系統調用，是操作系統暴露給應用程序的一組API。用戶通過調用該API來向操作系統申請執行受保護的程序，並由操作系統代為執行。
 
 <img src="https://data-flair.training/blogs/wp-content/uploads/sites/2/2021/08/Workings-of-a-System-Call.jpg" width="300px">
@@ -97,7 +98,21 @@ When a system call is triggered:
 3. The handler saves the caller's state (Program Counter, mode bit) to restore control to the user process.
 	1. The architecture must provide a way to return to user mode when finished.
 
+# 2.3 Interrupt 中斷
+We know the facts:
+- Programs runs through a determinant path.
+- However, random events happen during program execution, and we want the program to respond to that.
 
-## Why hardware? 
+```c
+void receive_message(char *msg){
+	printf("%s", msg);
+}
 
-操作系統的保護功能為什麼必須要靠硬件堅持？
+int main(){
+	while(1){
+		printf("Nothing happens.");
+	}
+}
+```
+
+An **OS interrupt** is a mechanism that allows the operating system (OS) to alter the flow of execution of a program by preemptively or reactively responding to an event.
