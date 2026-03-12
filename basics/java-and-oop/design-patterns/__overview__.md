@@ -1,0 +1,1 @@
+本章节文章部分参考自Refactoring GURU：https://refactoringguru.cn/design-patterns
