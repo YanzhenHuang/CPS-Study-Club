@@ -360,8 +360,12 @@ public class Container {
     private static Object getInstance(String className) {
 
         if (!ioc.containsKey(className)) {
-            Object instance = Class.forName(className).newInstance();
-            ioc.put(className, instance);
+            synchronized (Container.class) {    // 双检查保证线程安全
+                if (!ioc.containsKey(className)) {
+                    Object instance = Class.forName(className).newInstance();
+                    ioc.put(className, instance);
+                }
+            }
         }
 
         return ioc.get(className);
