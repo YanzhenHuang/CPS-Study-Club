@@ -36,29 +36,58 @@ class Bird implements Flyable {
     private int endurance;
     private int health;
     private String name;
+    private boolean isDeep = true;
 
     // 嵌套对象
     private Wing wing;
     
-    public Bird(String name, int endurance, int health) {
+    public Bird(String name, int endurance, int health, boolean isDeep) {
         this.name = name;
         this.endurance = endurance;
         this.health = health;
         this.wing = new Wing(21);
-    }   
+        this.isDeep = isDeep;
+    }
 
     @Override
     public void fly() { /* ... */ }
 
+    /**
+     * 选项1：浅拷贝，对齐字段，新创建访问对象避免共享引用
+     */
     @Override
-    public Bird clone() {
+    public Bird shallowCopy() {
         // 浅拷贝基础字段
-        Bird clonedBird = (Bird) super.clone();
+        Bird clonedBird = Bird(name, endurance, health);
         
         // 深拷贝嵌套对象，避免共享引用！
         cloned.wing = new Wing(this.wing.getSpan());
 
         return cloned;
+    }
+
+    /**
+     * 选项2：在字节码层面深拷贝
+     */
+    @Override
+    public Bird deepCopy() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+        oos.writeObject(this);
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bis);
+
+        return (Bird) ois.readObject();
+    }
+
+    public Prototype clone() {
+        if (isDeep) {
+            return deepCopy();
+        } else {
+            return shallowCopy();
+        }
     }
 }
 ```
